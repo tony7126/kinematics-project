@@ -7,6 +7,7 @@
 I went off what I saw in the third video of forward kinematics for the kr210 while looking at the kr210.urdf.xacro file to ensure the parameters actually made sense.  Below is an image breaking down how each value from the urdf fits into the the derived DH parameters.
 
 **DH Parameter Table**
+
 T | alpha | d (offset) | a
 --- | --- | --- | ---
 T0_1 | 0 | 0.75 | 0
@@ -25,10 +26,13 @@ Rotation along Y axis by -pi/2
 #### 2. Using the DH parameter table you derived earlier, create individual transformation matrices about each joint. In addition, also generate a generalized homogeneous transform between base_link and gripper_link using only end-effector(gripper) pose.
 
 I used the quarternion coordinates for this calculation (hadn't looked at the IK_server code and seen the calculation to RPY): 
-R0_G = [[1 - 2*qy**2 - 2*qz**2, 2*qx*qy - 2*qz*qw, 2*qx*qz + 2*qy*qw,  px],
-    [2*qx*qy + 2*qz*qw, 1 - 2*qx**2 - 2*qz**2, 2*qy*qz - 2*qx*qw,      py],
-    [2*qx*qz - 2*qy*qw, 2*qy*qz + 2*qx*qw, 1 - 2*qx**2 - 2*qy**2,      pz],
-    [0                , 0                , 0                    ,      1]]
+    
+    R0_G = [
+        [1 - 2*qy**2 - 2*qz**2, 2*qx*qy - 2*qz*qw, 2*qx*qz + 2*qy*qw,      px]
+        [2*qx*qy + 2*qz*qw, 1 - 2*qx**2 - 2*qz**2, 2*qy*qz - 2*qx*qw,      py]
+        [2*qx*qz - 2*qy*qw, 2*qy*qz + 2*qx*qw, 1 - 2*qx**2 - 2*qy**2,      pz]
+        [0                ,0                ,0                    ,         1]
+        ]
 
 #### 3. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
 To find the wrist center I get the R0_G rotation matrix by using the quarterion coordinates which is then post multiplied by the rotation correction matrix's transpose.  The vector orthonormal to the local z-axis of the gripper is then used to derive the WC as instructed in the inverse kinematic lesson (as they are only offset along that axis).  The rotation reversal isn't necessary (could just keep it unrotated and use local x-axis directional vector to get same result) but I preferred to stay consistent with the lesson.
